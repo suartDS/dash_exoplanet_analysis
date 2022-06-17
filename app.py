@@ -192,7 +192,7 @@ app.layout = html.Div([
         dbc.Col(
             html.Div([
                 html.P('Developed by'),
-                html.A('Artem Suchkov', href = '', style={'marginLeft': '2px'})
+                html.A('Artem Suchkov', href = 'https://t.me/su_art', style={'marginLeft': '2px'})
                 ],
                  className = 'app-referral'
                 ),
