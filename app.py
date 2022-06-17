@@ -19,32 +19,31 @@ df['KOI'] = df['KOI'].astype(int, errors = 'ignore')
 min_RPLANET_Df = min(df.RPLANET)
 max_RPLANET_Df = max(df.RPLANET)
 
-#create star size category
+#Сreate star size category
 bins = [0, 0.8, 1.2, 100]
 names = ['small','similar','bigger']
 df['StarSize'] = pd.cut(df.RSTAR, bins, labels=names)
 
-# TEMPERATURE BINS
+#Temperature bins
 tp_bins = [0, 200, 400, 500, 5000]
 tp_labels = ['t_low', 't_optimal', 't_high', 't_extreme']
 df['temp'] = pd.cut(df.TPLANET, tp_bins, labels = tp_labels)
 
-# SIZE BINS
+#Size bins
 r_bins = [0, 0.5, 2, 4, 100]
 r_labels = ['r_low', 'r_optimal', 'r_high', 'r_extreme']
 df['gravity'] = pd.cut(df.RPLANET, r_bins, labels = r_labels)
 
-# ESTIMATED OBJECT
-
+#Estimated Object
 df['status'] = np.where((df['temp'] == 't_optimal') & (df['gravity'] == 'r_optimal'), 'promising', None)
 df.loc[:,'status'] = np.where((df['temp'] == 't_optimal') & (df['gravity'].isin(['r_low','r_high'])), 'challenging', df['status'])
 df.loc[:,'status'] = np.where((df['gravity'] == 'r_optimal') & (df['temp'].isin(['t_low','t_high'])), 'challenging', df['status'])
 df['status'] = df.status.fillna('extreme')
 
-# RELATIVE DISTANCE
+#Relative Distance
 df['relative_dist'] = df['A']/df['RSTAR']
 
-#GLOBAL DESIGN SETTINGS
+#Global Design Settings
 CHARTS_TEMPLATE = dict(
     layout=go.Layout(
                     font = dict(family="Rockwell"),
@@ -54,9 +53,6 @@ CHARTS_TEMPLATE = dict(
 )
 
 COLOR_STATUS_VALUES = ['#646466','#3462eb','#12e639']
-
-
-#print(df.status.value_counts(dropna=False))
 
 star_size_selector = dcc.Dropdown(
     id = 'star_selector',
@@ -74,15 +70,13 @@ tplanet_selector = dcc.RangeSlider(
     value = [min_RPLANET_Df,max_RPLANET_Df] # Default value
 )
 
-#https://github.com/facultyai/dash-bootstrap-components
-#
 external_stylesheets = [dbc.themes.FLATLY]
 
 app = Dash(__name__, external_stylesheets=external_stylesheets)
 
 """ TABS CONTENT """
 
-# tab1 content
+# Tab1 content
 tab1_content = [    
     dbc.Row([
         dbc.Col([
@@ -107,7 +101,7 @@ tab1_content = [
         ])
     ])]
 
-# tab2 content
+#Tab2 content
 tab2_content = [
     dbc.Row([
         dbc.Col([
@@ -118,7 +112,7 @@ tab2_content = [
     )
   
 ]
-# tab3 content
+#Tab3 content
 text = 'Data are sourced from Kepler API via asterank.com'
 table_header = [
     html.Thead(html.Tr([html.Th("Field Name"), html.Th("Details")]))
@@ -170,7 +164,7 @@ tab3_content = [
 """ LAYOUT """
 
 app.layout = html.Div([
-    # header
+    #Header
         dbc.Row([
         dbc.Col(
             html.Img(src = app.get_asset_url('images/exoplanets_by_jaysimons-d9dv6th-small1.jpg'),
@@ -205,11 +199,11 @@ app.layout = html.Div([
             width = 3
             ),
     ],  className = 'app-header'),
-    #Store sessions up to 5~10 MB
+    #Store sessions up to 5~10 MB https://dash.plotly.com/dash-core-components/store
     dcc.Store(id = 'filtered_data', storage_type = 'session'),
     #Body
     html.Div([
-    #html.Hr(),
+    #Html.Hr(),
     dbc.Row([
         dbc.Col([
                 html.H6('Select Planet main semi-axis range'),
